@@ -1,0 +1,45 @@
+{
+  "serverInfo": {
+    "name": "agent-security-mcp",
+    "version": "0.1.0",
+    "description": "Security scanning and audit tools for AI agent workflows — prompt injection detection, secret scanning, scope validation, and permission auditing",
+    "author": "THRONE AI",
+    "license": "MIT",
+    "homepage": "https://github.com/mdfifty50-boop/agent-security-mcp",
+    "repository": "https://github.com/mdfifty50-boop/agent-security-mcp"
+  },
+  "capabilities": {
+    "tools": [
+      { "name": "scan_mcp_config", "description": "Scan MCP server configuration for security vulnerabilities" },
+      { "name": "detect_prompt_injection", "description": "Analyze text for prompt injection attempts with risk scoring" },
+      { "name": "validate_scope_contract", "description": "Check agent actions against scope contract for compliance" },
+      { "name": "scan_secrets", "description": "Detect leaked API keys, tokens, and credentials in text/code" },
+      { "name": "audit_agent_permissions", "description": "Audit agent permissions and flag over-privileged access" },
+      { "name": "generate_security_report", "description": "Generate comprehensive security assessment report" }
+    ],
+    "resources": [
+      { "uri": "security://owasp-llm-top10", "description": "OWASP Top 10 for LLM Applications" },
+      { "uri": "security://mcp-security-checklist", "description": "MCP server security checklist" }
+    ]
+  },
+  "categories": ["security", "compliance", "developer-tools", "audit"],
+  "keywords": ["security", "prompt-injection", "secret-detection", "ai-safety", "audit", "compliance", "vulnerability"],
+  "pricing": {
+    "free_tier": true,
+    "free_limit": "Single server scan, basic report",
+    "starter": "$49/month",
+    "pro": "$199/month",
+    "enterprise": "$799/month"
+  },
+  "install": {
+    "npm": "npx agent-security-mcp",
+    "claude_desktop": {
+      "mcpServers": {
+        "agent-security": {
+          "command": "npx",
+          "args": ["agent-security-mcp"]
+        }
+      }
+    }
+  }
+}
