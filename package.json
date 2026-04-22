@@ -1,0 +1,35 @@
+{
+  "name": "@asl-throne/agent-security-mcp",
+  "version": "0.1.0",
+  "description": "MCP server providing security scanning, prompt injection detection, secret leak detection, and agent permission auditing for AI agent workflows",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "agent-security-mcp": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test src/**/*.test.js"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "security",
+    "agent-security",
+    "prompt-injection",
+    "secret-detection",
+    "audit",
+    "compliance",
+    "ai-safety",
+    "model-context-protocol"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.23.0"
+  }
+}
