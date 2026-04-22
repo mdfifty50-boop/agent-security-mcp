@@ -1,5 +1,5 @@
 {
-  "name": "@asl-throne/agent-security-mcp",
+  "name": "agent-security-mcp",
   "version": "0.1.0",
   "description": "MCP server providing security scanning, prompt injection detection, secret leak detection, and agent permission auditing for AI agent workflows",
   "type": "module",
