@@ -1,6 +1,11 @@
 {
   "name": "agent-security-mcp",
   "version": "0.1.0",
+  "mcpName": "io.github.mdfifty50-boop/agent-security",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mdfifty50-boop/agent-security-mcp"
+  },
   "description": "MCP server providing security scanning, prompt injection detection, secret leak detection, and agent permission auditing for AI agent workflows",
   "type": "module",
   "main": "src/index.js",
