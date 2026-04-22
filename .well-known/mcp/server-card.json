@@ -15,7 +15,8 @@
       { "name": "validate_scope_contract", "description": "Check agent actions against scope contract for compliance" },
       { "name": "scan_secrets", "description": "Detect leaked API keys, tokens, and credentials in text/code" },
       { "name": "audit_agent_permissions", "description": "Audit agent permissions and flag over-privileged access" },
-      { "name": "generate_security_report", "description": "Generate comprehensive security assessment report" }
+      { "name": "generate_security_report", "description": "Generate comprehensive security assessment report" },
+      { "name": "detect_tool_poisoning", "description": "Analyze MCP tool definitions for hidden poisoning instructions (OWASP Agentic Top 10)" }
     ],
     "resources": [
       { "uri": "security://owasp-llm-top10", "description": "OWASP Top 10 for LLM Applications" },

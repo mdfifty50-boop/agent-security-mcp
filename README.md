@@ -12,6 +12,7 @@ Security scanning, prompt injection detection, secret leak detection, and agent 
 | `scan_secrets` | Detect leaked API keys, tokens, private keys, database URIs, and credentials in text or code |
 | `audit_agent_permissions` | Audit agent configurations against role-based expectations and flag principle of least privilege violations |
 | `generate_security_report` | Generate comprehensive security assessment reports with prioritized remediation plans |
+| `detect_tool_poisoning` | Analyze MCP tool definitions for hidden instructions that could manipulate agent behavior (OWASP Agentic Top 10) |
 
 ## Resources
 
