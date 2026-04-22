@@ -9,6 +9,7 @@ import { validateScopeContract } from './tools/scope-validator.js';
 import { scanSecrets } from './tools/secret-scanner.js';
 import { auditAgentPermissions } from './tools/permission-auditor.js';
 import { generateSecurityReport } from './tools/report-generator.js';
+import { detectToolPoisoning } from './tools/tool-poisoning.js';
 
 const server = new McpServer({
   name: 'agent-security-mcp',
@@ -116,6 +117,23 @@ server.tool(
     audit_results: z.array(z.any()).optional().describe('Array of audit_agent_permissions results to include in the report'),
   },
   async ({ agent_name, configs, audit_results }) => generateSecurityReport(agent_name, configs, audit_results)
+);
+
+// ═══════════════════════════════════════════
+// TOOL POISONING DETECTOR
+// ═══════════════════════════════════════════
+
+server.tool(
+  'detect_tool_poisoning',
+  'Analyze an MCP tool definition for poisoning indicators — hidden instructions in descriptions that could manipulate agent behavior. Covers OWASP Agentic Top 10 tool poisoning attack vectors.',
+  {
+    tool_definition: z.object({
+      name: z.string().describe('Name of the tool being analyzed'),
+      description: z.string().describe('The tool description text to analyze for hidden instructions'),
+      inputSchema: z.any().optional().describe('The tool input schema (JSON Schema) — parameter descriptions are also checked'),
+    }).describe('The MCP tool definition to analyze'),
+  },
+  async ({ tool_definition }) => detectToolPoisoning(tool_definition)
 );
 
 // ═══════════════════════════════════════════
