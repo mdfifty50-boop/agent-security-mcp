@@ -28,9 +28,9 @@
   "pricing": {
     "free_tier": true,
     "free_limit": "Single server scan, basic report",
-    "starter": "$49/month",
-    "pro": "$199/month",
-    "enterprise": "$799/month"
+    "starter": "$49/month — all 7 tools, 5K scans",
+    "pro": "$199/month — unlimited scans, CI integration",
+    "enterprise": "$799/month — SLA, SOC2 reporting, custom rules"
   },
   "install": {
     "npm": "npx agent-security-mcp",
