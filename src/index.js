@@ -3,6 +3,9 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 import { scanMcpConfig } from './tools/mcp-scanner.js';
 import { detectPromptInjection } from './tools/prompt-injection.js';
 import { validateScopeContract } from './tools/scope-validator.js';
@@ -11,11 +14,38 @@ import { auditAgentPermissions } from './tools/permission-auditor.js';
 import { generateSecurityReport } from './tools/report-generator.js';
 import { detectToolPoisoning } from './tools/tool-poisoning.js';
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const pkg = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf8'));
+const startTime = Date.now();
+let toolCallCount = 0;
+
+function wrap(fn) {
+  return async (...args) => {
+    toolCallCount++;
+    try { return await fn(...args); }
+    catch (e) { return { content: [{ type: 'text', text: JSON.stringify({ error: e.message }) }] }; }
+  };
+}
+
 const server = new McpServer({
   name: 'agent-security-mcp',
-  version: '0.1.0',
+  version: pkg.version,
   description: 'Security scanning, prompt injection detection, secret leak detection, and agent permission auditing for AI agent workflows',
 });
+
+// ═══════════════════════════════════════════
+// HEALTH CHECK
+// ═══════════════════════════════════════════
+
+server.tool('health_check', 'Returns server health, uptime, version, and usage stats', {},
+  async () => ({
+    content: [{ type: 'text', text: JSON.stringify({
+      status: 'healthy', server: 'agent-security-mcp', version: pkg.version,
+      uptime_seconds: Math.floor((Date.now() - startTime) / 1000),
+      tool_calls_served: toolCallCount, tools_available: 8, stateless: true,
+    }, null, 2) }],
+  })
+);
 
 // ═══════════════════════════════════════════
 // MCP CONFIGURATION SCANNER
@@ -32,7 +62,7 @@ server.tool(
     }).describe('MCP server configuration object'),
     server_name: z.string().describe('Name of the MCP server being scanned'),
   },
-  async ({ config, server_name }) => scanMcpConfig(config, server_name)
+  wrap(({ config, server_name }) => scanMcpConfig(config, server_name))
 );
 
 // ═══════════════════════════════════════════
@@ -46,7 +76,7 @@ server.tool(
     text: z.string().min(1).describe('The text to analyze for prompt injection patterns'),
     context: z.enum(['user_input', 'tool_result', 'system_prompt', 'agent_output']).describe('Where this text originates — affects risk scoring (user_input is highest risk)'),
   },
-  async ({ text, context }) => detectPromptInjection(text, context)
+  wrap(({ text, context }) => detectPromptInjection(text, context))
 );
 
 // ═══════════════════════════════════════════
@@ -68,7 +98,7 @@ server.tool(
       target_file: z.string().optional().describe('File path being accessed, if applicable'),
     }).describe('The action to validate against the scope contract'),
   },
-  async ({ scope_contract, action }) => validateScopeContract(scope_contract, action)
+  wrap(({ scope_contract, action }) => validateScopeContract(scope_contract, action))
 );
 
 // ═══════════════════════════════════════════
@@ -82,7 +112,7 @@ server.tool(
     content: z.string().min(1).describe('The text or code content to scan for secrets'),
     content_type: z.enum(['code', 'log', 'config', 'output']).describe('Type of content being scanned — affects detection sensitivity'),
   },
-  async ({ content, content_type }) => scanSecrets(content, content_type)
+  wrap(({ content, content_type }) => scanSecrets(content, content_type))
 );
 
 // ═══════════════════════════════════════════
@@ -101,7 +131,7 @@ server.tool(
     }).describe('Agent configuration to audit'),
     role: z.string().describe('The declared role of the agent (researcher, analyst, developer, reviewer, orchestrator, monitor)'),
   },
-  async ({ agent_config, role }) => auditAgentPermissions(agent_config, role)
+  wrap(({ agent_config, role }) => auditAgentPermissions(agent_config, role))
 );
 
 // ═══════════════════════════════════════════
@@ -116,7 +146,7 @@ server.tool(
     configs: z.array(z.any()).optional().describe('Array of scan_mcp_config results to include in the report'),
     audit_results: z.array(z.any()).optional().describe('Array of audit_agent_permissions results to include in the report'),
   },
-  async ({ agent_name, configs, audit_results }) => generateSecurityReport(agent_name, configs, audit_results)
+  wrap(({ agent_name, configs, audit_results }) => generateSecurityReport(agent_name, configs, audit_results))
 );
 
 // ═══════════════════════════════════════════
@@ -133,7 +163,7 @@ server.tool(
       inputSchema: z.any().optional().describe('The tool input schema (JSON Schema) — parameter descriptions are also checked'),
     }).describe('The MCP tool definition to analyze'),
   },
-  async ({ tool_definition }) => detectToolPoisoning(tool_definition)
+  wrap(({ tool_definition }) => detectToolPoisoning(tool_definition))
 );
 
 // ═══════════════════════════════════════════
